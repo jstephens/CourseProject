@@ -1,10 +1,8 @@
 from flask import Flask, render_template,request
 import plotly
-import plotly.graph_objs as go
-import glob, os
-import pandas as pd
 import json
 import plotly.express as px
+import pandas as pd
 
 app = Flask(__name__)
 
@@ -19,23 +17,20 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    feature =  'In Our TIme'
+    feature =  'In Our Time'
     print(feature)
     bar = create_plot(feature)
     return render_template('index.html', plot=bar)
 
-def create_plot(feature):    
-    if 'n' in str(feature):
-        examplething = [[0,0,0],
-                     [3, 5, 8],
-                     [2, 1, 13]]
-    else:
-        examplething = [[14,1, 3],
-                     [2, 1, 6],
-                     [2,3, 1]]    
-        
-    data = px.imshow(examplething)
-    data.update_layout(width=1500, height=500)
+def create_plot(feature):      
+    featurefile = feature.replace(' ','_')
+    datafile = './Inputs/novels/'+featurefile+'_df.csv'
+    datasource = pd.read_csv(datafile)
+    
+    title = 'Emotional Path Through '+feature
+    data = px.line(datasource, x="chapterno", y="score", title=title, hover_data=["words"])
+  #  data = px.imshow(datasou)
+    data.update_layout(width=450, height=450,margin_l=1)
     
     graphJSON = json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
     return graphJSON
@@ -47,4 +42,4 @@ def change_features():
     return graphJSON
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

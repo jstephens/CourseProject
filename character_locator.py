@@ -10,25 +10,34 @@ Input: raw text of novel containing chapters beginning with 'Chapter __'
 Output: character list and modified novel text
 
 """
+
+import time
 import re
 import spacy
 import neuralcoref
+import csv
+
+start = time.time()
 
 nlp = spacy.load('en_core_web_sm')  # load the model
 
-bookname='Pride_and_Prejudice'
+bookname='Les_Miserables'
 
-rawfilepath= 'Inputs/Novels/'+bookname+'.txt'
-with open(rawfilepath, encoding="utf8") as f:
-    booktext = list(f)
-    
+rawfilepath= 'Inputs/novels/'+bookname+'.txt'
+# with open(rawfilepath, encoding="utf8") as f:
+#     booktext = list(f)
+
+with open(rawfilepath, encoding="cp1252") as f:
+    booktext = list(f)    
+
 booktext = ' '.join(booktext)
 booktext = booktext.replace("Chapter",'CHAPTER')
 booktext = booktext.replace("'s","")
 booktext = booktext.replace("’s","")
-booktext = booktext.replace("——","")
+booktext = booktext.replace("——"," ")
 booktext = booktext.replace("-"," ")
 booktext = booktext.replace("—"," ")
+booktext = booktext.replace("\n"," ")
 x = booktext.split("CHAPTER ")
     
 def findlastnames():
@@ -47,9 +56,7 @@ def findlastnames():
                         suspectedsurnamesdict[next_word] += 1
                     elif next_word not in suspectedsurnamesdict:
                         suspectedsurnamesdict[next_word] = 1
-                        
-    print(suspectedsurnamesdict)
-    
+
     definitelastnamesarr = []
     
     for i in suspectedsurnamesdict:
@@ -64,8 +71,7 @@ def findlastnames():
                         if "the" in previous_words:
                             if i not in definitelastnamesarr:
                                 definitelastnamesarr.append(i)
-   
-    print(definitelastnamesarr)
+                                
     return definitelastnamesarr
 
 def neuralco():
@@ -80,25 +86,36 @@ def neuralco():
         newx = newx + text + newtext
         j += 1
         
-    exportfilename = './Inputs/Novels/'+bookname+'_processed.txt'
+    exportfilename = './Inputs/novels/'+bookname+'_processed.txt'
     text_file = open(exportfilename, "wt")
     text_file.write(newx)
     text_file.close()
     
-    return newx
+    print("Processed version of ",bookname," completed.")
     
-
-def ner(newx):
     dict1={}
     
+    newx = booktext.replace("'s","")
+    newx = booktext.replace("’s","")
+    newx = booktext.replace("——","")
+    newx = booktext.replace("-"," ")
+    newx = booktext.replace("—"," ")
+    newx = booktext.replace("'s","")
+    newx = newx.replace("——"," ")
+    newx = newx.replace("-"," ")
+    newx = newx.replace("—"," ")
+    newx = newx.split("CHAPTER ")
+    
     for z in newx:
-        ner_text = nlp(z)
-        for word in ner_text.ents:
-            if word.label_ == 'PERSON':
-                if word.text in dict1.keys():
-                    dict1[word.text] += 1
-                elif word.text not in dict1.keys():
-                    dict1[word.text] = 1
+        y1 = z.split(" ")
+        for mn in y1:
+            nlpped = nlp(mn)
+            for word in nlpped.ents:
+                if word.label_ == 'PERSON':
+                    if word.text in dict1.keys():
+                        dict1[word.text] += 1
+                    elif word.text not in dict1.keys():
+                        dict1[word.text] = 1
                 
     sorted_keys = sorted(dict1, key=dict1.get)
     
@@ -108,6 +125,30 @@ def ner(newx):
     
     for k, v in sorted_dict.items():
         print(k, " ",v)
+   
+    characterfilepath = './Inputs/novels/'+bookname+'_characters.csv'
+    characterfile = open(characterfilepath, "w")
+
+    writer = csv.writer(characterfile)
     
-newx = neuralco()
-ner(newx)
+    for key, value in sorted_dict.items():
+        writer.writerow([key, value])
+    
+    characterfile.close()
+    return sorted_dict
+
+def sort_entities(dict1):
+    loop = True
+    while loop == True:
+        for k, v in dict1.items():
+            print(list(dict1.keys()).index(k), " ",k, v)
+        userinput = input("Type the numbers of character1, character2 and press enter to consolidate.\nCharacter1 here means the primary character.\nPress S to save character list.\n")
+    
+neuralco()
+
+#sort_entities(dict1)
+
+    
+end = time.time()
+print(bookname," took ",end - start," time to complete")
+
