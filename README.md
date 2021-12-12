@@ -1,3 +1,5 @@
 # CourseProject
 
-Please fork this repository and paste the github link of your fork on Microsoft CMT. Detailed instructions are on Coursera under Week 1: Course Project Overview/Week 9 Activities.
+For writeup on process, please see [this page](https://jstephens.io/projects/hedonometrics/).
+
+For a video demo, please see this video on [UIllinois Media Space](https://mediaspace.illinois.edu/media/t/1_0zo69zbg) (requires login with school e-mail)
