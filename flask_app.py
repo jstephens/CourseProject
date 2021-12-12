@@ -3,30 +3,30 @@ import plotly
 import plotly.graph_objs as go
 import glob, os
 import pandas as pd
-import numpy as np
 import json
 import plotly.express as px
 
 app = Flask(__name__)
 
-os.chdir("./Inputs/Novels/")
-books = []
-for file in glob.glob("*.txt"):
-    if "_processed" not in file:
-        filename = file
-        filename1 = file.replace('_',' ')
-        filename1 = filename1.replace('.txt','')
-        books.append(filename1)
+# os.chdir("./Inputs/Novels/")
+# books = []
+# for file in glob.glob("*.txt"):
+#     if "_processed" not in file:
+#         filename = file
+#         filename1 = file.replace('_',' ')
+#         filename1 = filename1.replace('.txt','')
+#         books.append(filename1)
 
 @app.route('/')
 def index():
-    feature = 'In Our Time'
+    feature =  'In Our TIme'
+    print(feature)
     bar = create_plot(feature)
     return render_template('index.html', plot=bar)
 
 def create_plot(feature):    
     if 'n' in str(feature):
-        examplething = [[1, 2, 3],
+        examplething = [[0,0,0],
                      [3, 5, 8],
                      [2, 1, 13]]
     else:

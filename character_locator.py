@@ -68,9 +68,6 @@ def findlastnames():
     print(definitelastnamesarr)
     return definitelastnamesarr
 
-findlastnames()
-
-
 def neuralco():
     neuralcoref.add_to_pipe(nlp)
     newx = ""
@@ -112,5 +109,5 @@ def ner(newx):
     for k, v in sorted_dict.items():
         print(k, " ",v)
     
-    
-    
+newx = neuralco()
+ner(newx)
